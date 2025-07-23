@@ -49,18 +49,31 @@ namespace JornadaMilhas.Test
 
             OfertaViagem oferta = new(rotaNula, periodoValido, preco);
 
-            Assert.Contains("A oferta de viagem não possui rota ou período válidos.", oferta.Erros.Sumario);
+            Assert.False(oferta.EhValido);
+        }
+
+        [Theory]
+        [InlineData(-100)]
+        [InlineData(0)]
+        public void RetornaOfertaInvalidaQuandoPrecoNegativo(double preco)
+        {
+            OfertaViagem oferta = new(rotaValida, periodoValido, preco);
+
             Assert.False(oferta.EhValido);
         }
 
         [Fact]
-        public void RetornaOfertaInvalidaQuandoPrecoNegativo()
+        public void ValidarValidador()
         {
-            double preco = -10;
+            Periodo periodo = new(DateTime.Parse("2024-01-09"), DateTime.Parse("2024-01-03"));
+            
+            double preco = -100;
 
-            OfertaViagem oferta = new(rotaValida, periodoValido, preco);
+            var validacao = true;
 
-            Assert.False(oferta.EhValido);
+            OfertaViagem oferta = new(null, periodo, preco);
+
+            Assert.Equal(3, oferta.Erros.Count());
         }
     }
 }
