@@ -32,7 +32,7 @@ namespace JornadaMilhas.Test
                     DateTime dataInicio = f.Date.Soon();
                     return new Periodo(dataInicio, dataInicio.AddDays(30));
                 });
-            var rota = new Rota("Curitiba", "São Paulo");
+            var rota = new Rota("Curitiba", "Brasília");
 
             var mockOferta = new Faker<OfertaViagem>()
                 .CustomInstantiator(f =>
@@ -45,7 +45,9 @@ namespace JornadaMilhas.Test
                 .RuleFor(o => o.Desconto, () => 40)
                 .RuleFor(o => o.Ativa, () => true);
 
-            var ofertaEscolhida = new OfertaViagem(rota, mockPeriodo.Generate(), 80)
+            var ofertaEscolhida = new OfertaViagem(
+                new Rota("Curitiba", "São Paulo"), 
+                mockPeriodo.Generate(), 80)
             {
                 Desconto = 40,
                 Ativa = true
@@ -56,9 +58,8 @@ namespace JornadaMilhas.Test
             lista.AddRange(mockOferta.Generate(50));
 
             var gerenciadorDeOfertas = new GerenciadorDeOfertas(lista);
-            Func<OfertaViagem, bool> filtro = x => x.Rota.Destino == "São Paulo";
 
-            var oferta = gerenciadorDeOfertas.RecuperaMaiorDesconto(filtro);
+            var oferta = gerenciadorDeOfertas.RecuperaMaiorDesconto(x => x.Rota.Destino == "São Paulo");
 
             var precoEsperado = 40;
 
